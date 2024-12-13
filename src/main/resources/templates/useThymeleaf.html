@@ -5,19 +5,41 @@
     <title>Thymeleaf Sample</title>
 </head>
 <body>
-<!-- 01: 직접 문자를 삽입 -->
+<!-- 01: 직접 문자를 삽입
+     th:text="'hello world'"는 단순히 'hello world' 문자열을 렌더링한다.
+     아래처럼 th:text 속성이 없을 경우에는 "표시하는 부분"이 출력되지만
+     th:text 속성이 있을 경우 'hello world'로 대체되어 화면에 표시된다.
+-->
 <h1 th:text="'hello world'">표시하는 부분</h1>
-<!-- 02: 인라인 처리 -->
+<!-- 02: 인라인 처리
+     [[${name}]]는 Thymeleaf에서 인라인 표현식으로 컨텍스트 변수 name의 값을 출력한다.
+     이 예제에서는 컨트롤러에서 name="이순신"을 설정했으므로 "안녕하세요! 이순신씨"가 출력된다.
+-->
 <h1>안녕하세요! [[${name}]]씨</h1>
-<!-- 03: 값 결합 -->
+<!-- 03: 값 결합
+     th:text="'오늘의 날씨는 ' + '맑음' + '입니다'"
+     문자열을 더하는 방식으로 최종적으로 "오늘의 날씨는 맑음입니다"가 출력된다.
+-->
 <h1 th:text="'오늘의 날씨는 ' + '맑음' + '입니다'">표시하는 부분</h1>
-<!-- 04: 값 결합 (리터럴 치환)-->
+<!-- 04: 값 결합 (리터럴 치환)
+     th:text="|안녕하세요 ${name}씨|"
+     | | 사이에 ${name} 변수를 넣어 문자열을 쉽게 합칠 수 있다.
+     최종 출력: "안녕하세요 이순신씨"
+-->
 <h1 th:text="|안녕하세요 ${name}씨|">표시하는 부분</h1>
-<!-- 05: 지역 변수 -->
+<!-- 05: 지역 변수
+     th:with="a=1, b=2" 로 지역변수 a와 b를 선언할 수 있다.
+     th:text="|${a} + ${b} = ${a+b}|" 에서 a+b 는 1+2=3으로 계산되어 "1 + 2 = 3" 출력.
+-->
 <div th:with="a=1, b=2">
     <span th:text="|${a} + ${b} = ${a+b}|"></span>
 </div>
-<!-- 06: 비교와 등가 -->
+<!-- 06: 비교와 등가
+     th:text 안에 식을 직접 작성할 수 있다.
+     다음과 같이 비교 연산자의 결과가 출력된다.
+     예) "1>10" → false, "1<10" → true 등
+     문자열 비교 시 "길동 == 길동" → true, "길동 != 길동" → false
+-->
 <span th:text="1>10"></span>
 <span th:text="1<10"></span>
 <span th:text="1>=10"></span>
@@ -27,50 +49,97 @@
 <span th:text="길동 == 길동"></span>
 <span th:text="길동 != 길동"></span>
 <hr>
-<!-- 07 : 조건 연산자 -->
+<!-- 07 : 조건 연산자
+     삼항 연산자를 사용할 수 있다.
+     "${name} == '이순신'?'이순신입니다!':'이순신이 아닙니다'"
+     name이 "이순신"이면 "이순신입니다!", 아니면 "이순신이 아닙니다" 출력
+-->
 <p th:text="${name} == '이순신'?'이순신입니다!':'이순신이 아닙니다'"></p>
-<!-- 08 : 조건 분기(true) -->
+<!-- 08 : 조건 분기(true)
+     th:if="${name} == '이순신'"
+     name이 "이순신"이면 <div> 내부의 <p>를 렌더링. 아니면 숨긴다.
+-->
 <div th:if="${name} == '이순신'">
-    <p>이순신씨입니다!</p>
+    <p>이순신씨입니다!@</p>
 </div>
-<!-- 09: 조건 분기(false) -->
+<!-- 09: 조건 분기(false)
+     th:unless="${name} == '영희'"
+     name이 "영희"가 아니라면 내부 <p> 표시.
+     즉 name != "영희"일 때만 보여준다.
+-->
 <div th:unless="${name} == '영희'">
     <p>영희씨가 아닙니다</p>
 </div>
-<!-- 10: switch -->
+
+<!-- 10: switch
+     th:switch="${name}"으로 기준 변수를 잡고,
+     th:case 로 각 경우에 대한 값을 비교한다.
+     해당 case 값에 해당하는 블록만 출력.
+     case="*"는 기본값(else)을 의미한다.
+-->
 <div th:switch="${name}">
-    <p th:case="이순신" th:text="|${name}입니다!|"></p>
+    <p th:case="이순신1" th:text="|${name}입니다!|"></p>
     <p th:case="영희" th:text="|${name}입니다!|"></p>
     <p th:case="철수" th:text="|${name}입니다!|"></p>
     <p th:case="*">명부에 없습니다.</p>
 </div>
-<!-- 11: 참조(데이터를 결합한 객체) -->
+
+<!-- 11: 참조(데이터를 결합한 객체)
+     객체 mb가 있을 때 점(.)으로 접근: mb.id, mb.name
+     대괄호[]로 접근: mb['id'], mb['name']
+-->
 .으로 접근: <span th:text="*{mb.id}">ID</span> - <span th:text="${mb.name}">이름</span><br>
 []으로 접근: <span th:text="${mb['id']}">ID</span> - <span th:text="${mb['name']}">이름</span><br>
-<!-- 12: 참조(th:object)-->
+
+<!-- 12: 참조(th:object)
+     th:object="${mb}" 를 이용하면, 내부에서 *{...} 으로 해당 객체 속성에 바로 접근 가능.
+     *{id} 는 즉시 mb.id에 해당
+     [] 접근 방식도 동일하게 사용 가능.
+-->
 <th:block th:object="${mb}">
     .으로 접근 <span th:text="*{id}">ID</span> - <span th:text="*{name}">이름</span><br>
     []으로 접근 <span th:text="*{id}">ID</span> - <span th:text="*{['name']}">이름</span>
 </th:block>
 <br>
-<!-- 13: 참조(List) -->
+
+<!-- 13: 참조(List)
+     리스트에 접근: ${list[인덱스]}
+     directionList = ["left", "right", "up", "down"]
+-->
 <span th:text="${list[0]}">방위</span>
 <span th:text="${list[1]}">방위</span>
 <span th:text="${list[2]}">방위</span>
 <span th:text="${list[3]}">방위</span>
 <br>
-<!-- 14: 참조(Map) -->
+
+<!-- 14: 참조(Map)
+     map.hong.name 또는 map['hong']['name'] 으로 접근 가능
+     memberMap에 "hong"키로 Member(홍길동), "lee"키로 Member(이영희)가 존재
+-->
 .으로 접근: <span th:text="${map.hong.name}">이름 1</span>
 <span th:text="${map.lee.name}">이름 2</span><br>
 []로 접근: <span th:text="${map['hong']['name']}">이름 1</span>
 <span th:text="${map['lee']['name']}">이름 2</span>
-<!-- 15: 반복 -->
+
+
+<!-- 15: 반복
+    th:each="member : ${members}"
+    member 리스트를 순회하며 member 변수를 각 원소로 바인딩.
+-->
 <div th:each="member : ${members}">
     <p>[[${member.id}]] : [[${member.name}]]</p>
 </div>
-<!-- 18: 프래그먼트를 사용하기 -->
+<!-- 18: 프래그먼트를 사용하기
+     th:insert="fragment :: one" → fragment.html(또는 설정된 fragment 파일)의 "one"이라는 이름을 가진 fragment를 삽입
+     th:replace="fragment :: three" → "three"라는 fragment를 이 div를 통째로 대체
+     이를 통해 템플릿 레이아웃을 재사용하고 관리 가능.
+
+     출력 결과:
+    <div id="one"><span>하나</span></div>
+    <span>셋</span>
+-->
 <h1>Fragment를 아래에 삽입하기</h1>
-<div id="one" th:insert="fragment :: one"></div>
-<div id="three" th:replace="fragment :: three"></div>
+<div id="one" th:insert="fragment :: one">ㅇㅇ</div>
+<div id="three" th:replace="fragment :: three">ㅇㅇ</div>
 </body>
 </html>
