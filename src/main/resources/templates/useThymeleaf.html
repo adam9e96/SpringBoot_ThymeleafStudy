@@ -137,9 +137,16 @@
      출력 결과:
     <div id="one"><span>하나</span></div>
     <span>셋</span>
+
+    Thymeleaf 템플릿 내에서 사용 중인 "분리된 프래그먼트 표현식"이 더 이상 권장되지 않음.
+    fragment :: one 대신 ~{fragment :: one}와 같이 ~{ } 구문을 사용하는 것이 최신 문법이며,
+    미래 버전에서 기존 문법은 제거될 수 있습니다.
+    해결 방법:
+    Thymeleaf 템플릿에서 프래그먼트 표현식을 ~{...} 형태로 변경합니다.
+    예: <div th:insert="~{fragment :: one}"></div>
 -->
 <h1>Fragment를 아래에 삽입하기</h1>
-<div id="one" th:insert="fragment :: one">ㅇㅇ</div>
-<div id="three" th:replace="fragment :: three">ㅇㅇ</div>
+<div id="one" th:insert="~{fragment :: one}">ㅇㅇ</div>
+<div id="three" th:replace="~{fragment :: three}">ㅇㅇ</div>
 </body>
 </html>

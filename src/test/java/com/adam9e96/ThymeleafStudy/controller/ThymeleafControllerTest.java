@@ -1,8 +1,11 @@
 package com.adam9e96.ThymeleafStudy.controller;
 
 import com.adam9e96.ThymeleafStudy.entity.Member;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +32,8 @@ public class ThymeleafControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    private final Logger log = LoggerFactory.getLogger(ThymeleafControllerTest.class);
 
     @Test
     @DisplayName("/show 요청 시 useThymeleaf 뷰와 모델 데이터 검증")
@@ -87,5 +92,28 @@ public class ThymeleafControllerTest {
         mockMvc.perform(get("/a"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("pageA"));
+    }
+
+    //
+    @DisplayName("mvcResult 출력 결과")
+    @Test
+    public void ee() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/show"));
+        MvcResult mvcResult = resultActions.andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+
+    }
+
+    @DisplayName("mvcResult.getModelAndView 의 출력 결과")
+    @Test
+    public void ee2() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/show"));
+        MvcResult mvcResult = resultActions.andReturn();
+
+
+        log.info(String.valueOf(mvcResult.getModelAndView()));
+        log.info(String.valueOf(mvcResult.getResponse().getStatus()));
+
     }
 }
